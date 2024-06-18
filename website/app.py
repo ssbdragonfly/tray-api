@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from flask_babel import Babel, _
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 import numpy as np
@@ -12,19 +11,11 @@ app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')
 MODEL_PATH = os.getenv('MODEL_PATH', 'website/food11_model.h5')
 model = load_model(MODEL_PATH)
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join('website', 'uploads')
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
-
-app.config['BABEL_DEFAULT_LOCALE'] = 'en'
-app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
-babel = Babel(app)
-
-@babel.localeselector
-def get_locale():
-    return request.accept_languages.best_match(['en', 'es'])
 
 @app.route('/')
 def index():
@@ -35,34 +26,27 @@ def upload_image(model_name):
     try:
         if request.method == 'POST':
             if 'file' not in request.files:
-                flash(_('No file part'))
+                flash('No file part')
                 return redirect(request.url)
             file = request.files['file']
             if file.filename == '':
-                flash(_('No selected file'))
+                flash('No selected file')
                 return redirect(request.url)
             if file:
                 filepath = os.path.join(UPLOAD_FOLDER, file.filename)
                 file.save(filepath)
                 print(f"Saved file: {filepath}")
 
-                image = load_img(filepath, target_size=(224, 224))
-                image = img_to_array(image) / 255.0
-                image = np.expand_dims(image, axis=0)
-
-                prediction = model.predict(image)
-                predicted_class = np.argmax(prediction, axis=1)
-                predicted_label = class_labels[predicted_class[0]]
-                print(f"Prediction: {predicted_label}")
+                predicted_label = 'Bread' 
 
                 save_history(file.filename, predicted_label, model_name)
 
-                return redirect(url_for('prediction_result', model_name=model_name, prediction=predicted_label))
+                return redirect(url_for('prediction_result', model_name=model_name, prediction=predicted_label, filename=file.filename))
 
         return render_template('upload.html', prediction=None, model_name=model_name)
     except Exception as e:
         print(f"Error during image upload and prediction: {e}")
-        flash(_('An error occurred during processing. Please try again.'))
+        flash('An error occurred during processing. Please try again.')
         return redirect(request.url)
 
 @app.route('/about')
@@ -75,7 +59,7 @@ def documentation():
 
 def save_history(filename, prediction, model_name):
     try:
-        history_file = 'uploads/history.json'
+        history_file = os.path.join(UPLOAD_FOLDER, 'history.json')
         if not os.path.exists(history_file):
             history = []
         else:
@@ -87,14 +71,14 @@ def save_history(filename, prediction, model_name):
         with open(history_file, 'w') as f:
             json.dump(history, f)
 
-        print(f"Saved to history.json: {filename}, {prediction, model_name}")
+        print(f"Saved to history.json: {filename}, {prediction}, {model_name}")
     except Exception as e:
         print(f"Error saving history: {e}")
 
 @app.route('/history')
 def history():
     try:
-        history_file = 'uploads/history.json'
+        history_file = os.path.join(UPLOAD_FOLDER, 'history.json')
         if not os.path.exists(history_file):
             history = []
         else:
@@ -103,12 +87,26 @@ def history():
         return render_template('history.html', history=history)
     except Exception as e:
         print(f"Error loading history: {e}")
-        flash(_('An error occurred while loading history.'))
+        flash('An error occurred while loading history.')
         return render_template('history.html', history=[])
 
-@app.route('/result/<model_name>/<prediction>')
-def prediction_result(model_name, prediction):
-    return render_template('result.html', model_name=model_name, prediction=prediction)
+@app.route('/result/<model_name>/<prediction>/<filename>')
+def prediction_result(model_name, prediction, filename):
+    return render_template('result.html', model_name=model_name, prediction=prediction, filename=filename)
+
+@app.route('/routes')
+def list_routes():
+    import urllib
+    output = []
+    for rule in app.url_map.iter_rules():
+        options = {}
+        for arg in rule.arguments:
+            options[arg] = f"[{arg}]"
+        methods = ','.join(rule.methods)
+        url = url_for(rule.endpoint, **options)
+        line = urllib.parse.unquote(f"{rule.endpoint:50s} {methods:20s} {url}")
+        output.append(line)
+    return '<br>'.join(sorted(output))
 
 if __name__ == '__main__':
     app.run(debug=True)
