@@ -1,48 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Tray API</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/documentation">Documentation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/history">History</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-    <main class="container mt-5">
-        <section>
-            <h2>Our Mission</h2>
-            <p>Our mission is to provide accurate and fast food image classification services using ML models. Need to make better models and nutrition models as well.</p>
-        </section>
-        <section>
-            <h2>Our Team</h2>
-            <p>We are a group of cool people. im the only cool person for now.</p>
-        </section>
-    </main>
-    <footer class="bg-light py-3 mt-5">
-        <p class="text-center">&copy; 2024 Your Company Name. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<main class="container mt-5">
+    <section>
+        <h2>Our Mission</h2>
+        <p>Our mission is to provide accurate and fast food image classification services using ML models. Need to make better models and nutrition models as well.</p>
+    </section>
+    <section>
+        <h2>Our Team</h2>
+        <p>We are a group of cool people. I'm the only cool person for now.</p>
+    </section>
+</main>
+{% endblock %}
