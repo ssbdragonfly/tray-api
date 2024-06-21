@@ -103,5 +103,9 @@ def list_routes():
         output.append(line)
     return '<br>'.join(sorted(output))
 
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
