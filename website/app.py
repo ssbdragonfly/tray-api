@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask_babel import Babel, _
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 import numpy as np
@@ -17,6 +18,14 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 
+app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
+babel = Babel(app)
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(['en', 'es'])
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -26,11 +35,11 @@ def upload_image(model_name):
     try:
         if request.method == 'POST':
             if 'file' not in request.files:
-                flash('No file part')
+                flash(_('No file part'))
                 return redirect(request.url)
             file = request.files['file']
             if file.filename == '':
-                flash('No selected file')
+                flash(_('No selected file'))
                 return redirect(request.url)
             if file:
                 filepath = os.path.join(UPLOAD_FOLDER, file.filename)
@@ -53,7 +62,7 @@ def upload_image(model_name):
         return render_template('upload.html', prediction=None, model_name=model_name)
     except Exception as e:
         print(f"Error during image upload and prediction: {e}")
-        flash('An error occurred during processing. Please try again.')
+        flash(_('An error occurred during processing. Please try again.'))
         return redirect(request.url)
 
 @app.route('/about')
@@ -78,7 +87,7 @@ def save_history(filename, prediction, model_name):
         with open(history_file, 'w') as f:
             json.dump(history, f)
 
-        print(f"Saved to history.json: {filename}, {prediction}, {model_name}")
+        print(f"Saved to history.json: {filename}, {prediction, model_name}")
     except Exception as e:
         print(f"Error saving history: {e}")
 
@@ -94,7 +103,7 @@ def history():
         return render_template('history.html', history=history)
     except Exception as e:
         print(f"Error loading history: {e}")
-        flash('An error occurred while loading history.')
+        flash(_('An error occurred while loading history.'))
         return render_template('history.html', history=[])
 
 @app.route('/result/<model_name>/<prediction>')
