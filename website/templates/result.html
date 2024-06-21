@@ -6,12 +6,9 @@
         Predicted class: {{ prediction }}
     </div>
     <div class="text-center mt-4">
-<<<<<<< HEAD
-=======
         <img src="{{ url_for('static', filename='website/uploads/' + filename) }}" alt="Uploaded Image" class="img-thumbnail">
     </div>
     <div class="text-center mt-4">
->>>>>>> c2164cb (fixed the github issues, this is the commit for updating history and results, as well as removing babel because it broke everything)
         <a href="/api/{{ model_name }}" class="btn btn-secondary">Upload another image</a>
     </div>
 </main>

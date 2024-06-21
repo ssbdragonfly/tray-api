@@ -5,22 +5,6 @@
 {% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
-    <main class="container mt-5">
-        <h2>Upload an Image for Classification using {{ model_name }}</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="file">Choose an image file:</label>
-                <input type="file" class="form-control-file" id="file" name="file">
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-        {% if prediction is not none %}
-        <h3 class="mt-4">Prediction: {{ prediction }}</h3>
-        <img src="{{ url_for('static', filename=file_path) }}" alt="Uploaded Image" class="img-thumbnail">
-        {% endif %}
-    </main>
-=======
 <main class="container mt-5">
     <h2>Upload an Image for Classification using {{ model_name }}</h2>
     <form method="POST" enctype="multipart/form-data">
@@ -35,5 +19,4 @@
     <img src="{{ url_for('static', filename=file_path) }}" alt="Uploaded Image" class="img-thumbnail">
     {% endif %}
 </main>
->>>>>>> c2164cb (fixed the github issues, this is the commit for updating history and results, as well as removing babel because it broke everything)
 {% endblock %}

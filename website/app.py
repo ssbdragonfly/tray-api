@@ -1,15 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import img_to_array, load_img
-import numpy as np
 import os
 import json
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')
-
-MODEL_PATH = os.getenv('MODEL_PATH', 'website/food11_model.h5')
-model = load_model(MODEL_PATH)
 
 UPLOAD_FOLDER = os.path.join('website', 'uploads')
 if not os.path.exists(UPLOAD_FOLDER):
@@ -37,7 +31,8 @@ def upload_image(model_name):
                 file.save(filepath)
                 print(f"Saved file: {filepath}")
 
-                predicted_label = 'Bread' 
+                #hardcoded prediction for demonstration
+                predicted_label = 'Bread'
 
                 save_history(file.filename, predicted_label, model_name)
 
@@ -49,7 +44,6 @@ def upload_image(model_name):
         flash('An error occurred during processing. Please try again.')
         return redirect(request.url)
 
-        
 @app.route('/about')
 def about():
     return render_template('about.html')
