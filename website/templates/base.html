@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tray API</title>
+    <title>{% block title %}Tray API{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -32,18 +31,9 @@
             </ul>
         </div>
     </nav>
-    
-    <div class="container">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert alert-warning" role="alert">
-                    {{ messages[0] }}
-                </div>
-            {% endif %}
-        {% endwith %}
-        {% block content %}
-        {% endblock %}
-    </div>
+    <main class="container mt-5">
+        {% block content %}{% endblock %}
+    </main>
     <footer class="bg-light py-3 mt-5">
         <p class="text-center">&copy; 2024 Tray API. All rights reserved.</p>
     </footer>

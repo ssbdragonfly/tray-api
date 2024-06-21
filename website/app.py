@@ -37,6 +37,7 @@ def upload_image(model_name):
                 file.save(filepath)
                 print(f"Saved file: {filepath}")
 
+<<<<<<< HEAD
                 predicted_label = 'Bread' 
 
                 save_history(file.filename, predicted_label, model_name)
@@ -48,7 +49,22 @@ def upload_image(model_name):
         print(f"Error during image upload and prediction: {e}")
         flash('An error occurred during processing. Please try again.')
         return redirect(request.url)
+=======
+                # hardcoded the thing because the ml is too large to put into github
+                predicted_label = 'Bread'  
 
+                save_history(file.filename, predicted_label, model_name)
+>>>>>>> c2164cb (fixed the github issues, this is the commit for updating history and results, as well as removing babel because it broke everything)
+
+                return redirect(url_for('prediction_result', model_name=model_name, prediction=predicted_label, filename=file.filename))
+
+        return render_template('upload.html', prediction=None, model_name=model_name)
+    except Exception as e:
+        print(f"Error during image upload and prediction: {e}")
+        flash('An error occurred during processing. Please try again.')
+        return redirect(request.url)
+
+        
 @app.route('/about')
 def about():
     return render_template('about.html')
