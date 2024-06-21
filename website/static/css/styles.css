@@ -79,3 +79,12 @@ h1 {
 .contact-info a:hover {
     text-decoration: underline;
 }
+
+.card {
+    margin-bottom: 30px;
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
