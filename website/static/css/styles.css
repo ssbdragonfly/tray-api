@@ -60,6 +60,7 @@ h1 {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f9f9f9;
+    font-size: 1.2rem;
 }
 
 .contact-info ul {
@@ -87,4 +88,25 @@ h1 {
 .card-img-top {
     height: 250px;
     object-fit: cover;
+}
+
+.card-footer {
+    text-align: center;
+}
+
+.card-footer a {
+    margin: 0 5px;
+}
+
+.contact-info i {
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.social-icons a {
+    color: #007bff;
+}
+
+.social-icons a:hover {
+    color: #0056b3;
 }

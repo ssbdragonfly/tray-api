@@ -1,15 +1,43 @@
 {% extends "base.html" %}
 
+{% block title %}Contact Us{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h1>Contact Us</h1>
-    <div class="contact-info">
-        <p>Reach out to me!</p>
-        <ul>
-            <li>Email: <a href="mailto:bishtshaurya314@gmail.com">bishtshaurya314@gmail.com</a></li>
-            <li>GitHub: <a href="https://github.com/ssbdragonfly" target="_blank">github.com/ssbdragonfly</a></li>
-            <li>LinkedIn: <a href="https://www.linkedin.com/in/shaurya-bisht-6857732b1//" target="_blank">https://www.linkedin.com/in/shaurya-bisht-6857732b1/</a></li>
+<div class="container mt-5">
+    <h1 class="mb-4">Contact Us</h1>
+    <p class="lead">We'd love to hear from you! Reach out to us through the following places:</p>
+    <div class="contact-info mt-4">
+        <ul class="list-unstyled">
+            <li class="mb-3">
+                <a href="mailto:bishtshaurya314@gmail.com" class="text-dark">
+                    <i class="fas fa-envelope fa-lg"></i>
+                    Email: bishtshaurya314@gmail.com
+                </a>
+            </li>
+            <li class="mb-3">
+                <a href="https://github.com/ssbdragonfly" target="_blank" class="text-dark">
+                    <i class="fab fa-github fa-lg"></i>
+                    GitHub: github.com/ssbdragonfly
+                </a>
+            </li>
+            <li class="mb-3">
+                <a href="https://www.linkedin.com/in/shaurya-bisht-6857732b1/" target="_blank" class="text-dark">
+                    <i class="fab fa-linkedin fa-lg"></i>
+                    LinkedIn: Shaurya Bisht
+                </a>
+            </li>
         </ul>
+    </div>
+    <div class="mt-5">
+        <h2>Follow Me</h2>
+        <div class="social-icons">
+            <a href="https://github.com/ssbdragonfly" target="_blank" class="text-dark mr-3">
+                <i class="fab fa-github fa-2x"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/shaurya-bisht-6857732b1/" target="_blank" class="text-dark mr-3">
+                <i class="fab fa-linkedin fa-2x"></i>
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
