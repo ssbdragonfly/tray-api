@@ -11,6 +11,25 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 
+blog_posts = [
+    {
+        'id': 1,
+        'title': 'First Blog Post',
+        'author': 'Shaurya Bisht',
+        'date': '2024-06-01',
+        'summary': 'wow this is words inside a summary.',
+        'content': 'wow this is words inside a blog.'
+    },
+    {
+        'id': 2,
+        'title': 'Second Blog Post',
+        'author': 'Shaurya Bisht',
+        'date': '2024-06-15',
+        'summary': 'wow this is words inside a summary.',
+        'content': 'wow this is words inside a blog.'
+    }
+]
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -110,6 +129,18 @@ def contact():
 @app.route('/team')
 def team():
     return render_template('team.html')
+
+@app.route('/blog')
+def blog():
+    return render_template('blog.html', posts=blog_posts)
+
+@app.route('/blog/<int:post_id>')
+def post_detail(post_id):
+    post = next((post for post in blog_posts if post['id'] == post_id), None)
+    if post is None:
+        abort(404)
+    return render_template('post.html', post=post)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
