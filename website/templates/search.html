@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Search Blog Posts{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Search Blog Posts</h1>
+    <form action="{{ url_for('search') }}" method="get">
+        <div class="form-group">
+            <label for="search_term">Search:</label>
+            <input type="text" class="form-control" id="search_term" name="search_term" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if search_term %}
+    <hr>
+    <h2 class="mt-4">Search Results for "{{ search_term }}"</h2>
+    {% endif %}
+
+    {% if posts %}
+        {% for post in posts %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.content }}</p>
+                    <p class="card-text"><small class="text-muted">Posted by {{ post.author }} on {{ post.date_posted }}</small></p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No posts found.</p>
+    {% endif %}
+</div>
+{% endblock %}

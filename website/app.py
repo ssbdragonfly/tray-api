@@ -141,6 +141,13 @@ def post_detail(post_id):
         abort(404)
     return render_template('post.html', post=post)
 
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        search_term = request.form['search_term']
+        filtered_posts = [post for post in blog_posts if search_term.lower() in post['title'].lower()]
+        return render_template('search_results.html', posts=filtered_posts, search_term=search_term)
+    return render_template('search.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
