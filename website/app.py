@@ -11,24 +11,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 
-blog_posts = [
-    {
-        'id': 1,
-        'title': 'First Blog Post',
-        'author': 'Shaurya Bisht',
-        'date': '2024-06-01',
-        'summary': 'wow this is words inside a summary.',
-        'content': 'wow this is words inside a blog.'
-    },
-    {
-        'id': 2,
-        'title': 'Second Blog Post',
-        'author': 'Shaurya Bisht',
-        'date': '2024-06-15',
-        'summary': 'wow this is words inside a summary.',
-        'content': 'wow this is words inside a blog.'
-    }
-]
+BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
 
 @app.route('/')
 def index():
@@ -50,7 +33,7 @@ def upload_image(model_name):
                 file.save(filepath)
                 print(f"Saved file: {filepath}")
 
-                #hardcoded prediction for demonstration
+                # Hardcoded prediction for demonstration
                 predicted_label = 'Bread'
 
                 save_history(file.filename, predicted_label, model_name)
@@ -130,24 +113,65 @@ def contact():
 def team():
     return render_template('team.html')
 
+def load_blog_posts():
+    if os.path.exists(BLOG_POSTS_FILE):
+        with open(BLOG_POSTS_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def get_categories():
+    posts = load_blog_posts()
+    categories = set()
+    for post in posts:
+        if 'category' in post:
+            categories.add(post['category'])
+    return list(categories)
+
+def get_tags():
+    posts = load_blog_posts()
+    tags = set()
+    for post in posts:
+        if 'tags' in post:
+            tags.update(post['tags'])
+    return list(tags)
+
 @app.route('/blog')
 def blog():
-    return render_template('blog.html', posts=blog_posts)
-
-@app.route('/blog/<int:post_id>')
-def post_detail(post_id):
-    post = next((post for post in blog_posts if post['id'] == post_id), None)
-    if post is None:
-        abort(404)
-    return render_template('post.html', post=post)
+    posts = load_blog_posts()
+    categories = get_categories()
+    tags = get_tags()
+    return render_template('blog.html', posts=posts, categories=categories, tags=tags)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
         search_term = request.form['search_term']
-        filtered_posts = [post for post in blog_posts if search_term.lower() in post['title'].lower()]
-        return render_template('search_results.html', posts=filtered_posts, search_term=search_term)
+        posts = load_blog_posts()
+        search_results = [post for post in posts if search_term.lower() in post['title'].lower() or search_term.lower() in post['content'].lower()]
+        return render_template('search_results.html', search_results=search_results, search_term=search_term)
     return render_template('search.html')
+
+@app.route('/category/<category_name>')
+def category(category_name):
+    posts = load_blog_posts()
+    category_posts = [post for post in posts if post.get('category') == category_name]
+    return render_template('category.html', posts=category_posts, category_name=category_name)
+
+@app.route('/tag/<tag_name>')
+def tag(tag_name):
+    posts = load_blog_posts()
+    tag_posts = [post for post in posts if tag_name in post.get('tags', [])]
+    return render_template('tag.html', posts=tag_posts, tag_name=tag_name)
+
+@app.route('/post/<post_title>')
+def post(post_title):
+    posts = load_blog_posts()
+    post = next((post for post in posts if post['title'] == post_title), None)
+    if post:
+        return render_template('post.html', post=post)
+    else:
+        flash('Post not found.')
+        return redirect(url_for('blog'))
 
 if __name__ == '__main__':
     app.run(debug=True)
