@@ -6,6 +6,47 @@
     <title>{% block title %}Tray API{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/styles.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+
+            const toggleButton = document.getElementById('theme-toggle');
+            if (theme === 'dark') {
+                toggleButton.classList.add('fa-sun');
+                toggleButton.classList.remove('fa-moon');
+            } else {
+                toggleButton.classList.add('fa-moon');
+                toggleButton.classList.remove('fa-sun');
+            }
+
+            console.log(`Current theme on load: ${theme}`);
+        });
+
+        function toggleTheme() {
+            let currentTheme = document.documentElement.getAttribute('data-theme');
+            let targetTheme = 'light';
+
+            if (currentTheme === 'light') {
+                targetTheme = 'dark';
+            }
+
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('theme', targetTheme);
+
+            const toggleButton = document.getElementById('theme-toggle');
+            if (targetTheme === 'dark') {
+                toggleButton.classList.add('fa-sun');
+                toggleButton.classList.remove('fa-moon');
+            } else {
+                toggleButton.classList.add('fa-moon');
+                toggleButton.classList.remove('fa-sun');
+            }
+
+            console.log(`Theme toggled to: ${targetTheme}`);
+        }
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -37,6 +78,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/contact">Contact Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="toggleTheme()">
+                        <i id="theme-toggle" class="fas fa-moon"></i>
+                    </a>
                 </li>
             </ul>
         </div>
