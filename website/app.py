@@ -148,8 +148,11 @@ def search():
         search_term = request.form['search_term']
         posts = load_blog_posts()
         search_results = [post for post in posts if search_term.lower() in post['title'].lower() or search_term.lower() in post['content'].lower()]
+        print(f"Search Term: {search_term}")
+        print(f"Search Results: {search_results}")
         return render_template('search_results.html', search_results=search_results, search_term=search_term)
     return render_template('search.html')
+
 
 @app.route('/category/<category_name>')
 def category(category_name):
