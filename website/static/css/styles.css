@@ -7,6 +7,10 @@
     --footer-text: #333;
     --nav-bg: #f8f9fa;
     --nav-link: #007bff;
+    --card-text: #333; 
+    --card-bg: #f9f9f9; 
+    --card-border: #ddd; 
+    --icon-color: #007bff; 
 }
 
 [data-theme="dark"] {
@@ -18,6 +22,10 @@
     --footer-text: #f0f0f0;
     --nav-bg: #555;
     --nav-link: #f0f0f0;
+    --card-text: #f0f0f0; 
+    --card-bg: #444; 
+    --card-border: #666; 
+    --icon-color: #f0f0f0; 
 }
 
 body {
@@ -84,15 +92,17 @@ h1 {
     max-width: 600px;
     margin: 20px auto;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--card-border);
     border-radius: 5px;
-    background-color: #f9f9f9;
+    background-color: var(--card-bg);
     font-size: 1.2rem;
+    color: var(--card-text); 
 }
 
 [data-theme="dark"] .contact-info {
     background-color: #444;
     border-color: #666;
+    color: var(--card-text); 
 }
 
 .contact-info ul {
@@ -105,7 +115,7 @@ h1 {
 }
 
 .contact-info a {
-    color: #007BFF;
+    color: var(--footer-text); 
     text-decoration: none;
 }
 
@@ -115,6 +125,9 @@ h1 {
 
 .card {
     margin-bottom: 30px;
+    color: var(--card-text); 
+    background-color: var(--card-bg); 
+    border: 1px solid var(--card-border); 
 }
 
 .card-img-top {
@@ -132,13 +145,43 @@ h1 {
 
 .contact-info i {
     margin-right: 10px;
-    color: #007bff;
+    color: var(--icon-color); 
 }
 
 .social-icons a {
-    color: #007bff;
+    color: var(--icon-color); 
 }
 
 .social-icons a:hover {
     color: #0056b3;
+}
+
+footer {
+    background-color: var(--footer-background); 
+}
+
+.history, .contact-info p {
+    color: var(--text-color); 
+}
+
+.contact-info .social-icons a {
+    color: var(--footer-text); 
+}
+
+[data-theme="dark"] .bg-light {
+    background-color: #5e5e5e !important;
+}
+
+[data-theme="dark"] .navbar-light .navbar-nav .nav-link {
+    color: white;
+}
+
+[data-theme="dark"] .table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+[data-theme="dark"] .text-dark {
+    color: white;
 }
