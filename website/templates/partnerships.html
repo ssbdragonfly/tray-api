@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Partnerships - Tray API{% endblock %}
+
+{% block additional_styles %}
+{% endblock %}
+
+{% block content %}
+<main class="container">
+    <section>
+        <div class="partner">
+            <img src="{{ url_for('static', filename='img/partner-logo1.png') }}" alt="Partner 1 Logo">
+            <div class="partner-description">
+                <h3>Partner 1</h3>
+                <p>description wow</p>
+            </div>
+        </div>
+        <div class="partner">
+            <img src="{{ url_for('static', filename='img/partner-logo2.png') }}" alt="Partner 2 Logo">
+            <div class="partner-description">
+                <h3>Partner 2</h3>
+                <p>description wow</p>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
