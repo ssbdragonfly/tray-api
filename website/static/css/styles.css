@@ -7,11 +7,12 @@
     --footer-text: #333;
     --nav-bg: #f8f9fa;
     --nav-link: #007bff;
-    --card-text: #333; 
-    --card-bg: #f9f9f9; 
-    --card-border: #ddd; 
-    --icon-color: #007bff; 
+    --card-text: #333;
+    --card-bg: #f9f9f9;
+    --card-border: #ddd;
+    --icon-color: #007bff;
 }
+
 [data-theme="dark"] {
     --background-color: #333;
     --text-color: #f0f0f0;
@@ -21,10 +22,10 @@
     --footer-text: #f0f0f0;
     --nav-bg: #555;
     --nav-link: #f0f0f0;
-    --card-text: #f0f0f0; 
-    --card-bg: #444; 
-    --card-border: #666; 
-    --icon-color: #f0f0f0; 
+    --card-text: #f0f0f0;
+    --card-bg: #444;
+    --card-border: #666;
+    --icon-color: #f0f0f0;
 }
 
 body {
@@ -33,7 +34,7 @@ body {
     padding: 0;
     background-color: var(--background-color);
     color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease; 
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header {
@@ -87,8 +88,8 @@ nav ul li.dropdown:hover .dropdown-menu {
 }
 
 .dropdown-menu a:hover {
-    background-color: #0056b3; 
-    color: #f0f0f0; 
+    background-color: #0056b3;
+    color: #f0f0f0;
 }
 
 main {
@@ -125,13 +126,13 @@ h1 {
     border-radius: 5px;
     background-color: var(--card-bg);
     font-size: 1.2rem;
-    color: var(--card-text); 
+    color: var(--card-text);
 }
 
 [data-theme="dark"] .contact-info {
     background-color: #444;
     border-color: #666;
-    color: var(--card-text); 
+    color: var(--card-text);
 }
 
 .contact-info ul {
@@ -144,7 +145,7 @@ h1 {
 }
 
 .contact-info a {
-    color: var(--footer-text); 
+    color: var(--footer-text);
     text-decoration: none;
 }
 
@@ -154,9 +155,10 @@ h1 {
 
 .card {
     margin-bottom: 30px;
-    color: var(--card-text); 
-    background-color: var(--card-bg); 
-    border: 1px solid var(--card-border); 
+    color: var(--card-text);
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-img-top {
@@ -174,23 +176,24 @@ h1 {
 
 .contact-info i {
     margin-right: 10px;
-    color: var(--icon-color); 
+    color: var(--icon-color);
 }
 
 .social-icons a {
-    color: var(--icon-color); 
+    color: var(--icon-color);
 }
 
 .social-icons a:hover {
     color: #0056b3;
 }
 
-.history, .contact-info p {
-    color: var(--text-color); 
+.history,
+.contact-info p {
+    color: var(--text-color);
 }
 
 .contact-info .social-icons a {
-    color: var(--footer-text); 
+    color: var(--footer-text);
 }
 
 [data-theme="dark"] .bg-light {
@@ -227,4 +230,84 @@ h1 {
     footer {
         padding: 0.5em;
     }
+}
+
+/* Additional CSS Styles */
+[data-theme="dark"] .navbar {
+    background-color: #333;
+}
+
+[data-theme="dark"] .navbar-toggler-icon {
+    background-color: #f0f0f0;
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background-color: #444;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .dropdown-menu a {
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .dropdown-menu a:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.btn {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+[data-theme="dark"] .btn:hover {
+    background-color: #0056b3;
+}
+
+.form-control {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--card-border);
+}
+
+[data-theme="dark"] .form-control {
+    background-color: #444;
+    color: #f0f0f0;
+    border-color: #666;
+}
+
+.card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .card {
+    background-color: #444;
+    border-color: #666;
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .card:hover {
+    background-color: #333;
+    border-color: #555;
+}
+
+footer a {
+    color: var(--footer-text);
+    transition: color 0.3s ease;
+}
+
+[data-theme="dark"] footer a {
+    color: #fff;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+[data-theme="dark"] footer a:hover {
+    color: #007bff;
 }
