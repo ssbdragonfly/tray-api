@@ -156,10 +156,6 @@ h1 {
     color: #0056b3;
 }
 
-footer {
-    background-color: var(--footer-background); 
-}
-
 .history, .contact-info p {
     color: var(--text-color); 
 }
@@ -183,5 +179,5 @@ footer {
 }
 
 [data-theme="dark"] .text-dark {
-    color: white;
+    color: white !important;
 }
