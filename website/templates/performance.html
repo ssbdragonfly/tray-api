@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Performance - Tray API{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .performance-section {
+        margin-bottom: 20px;
+    }
+    .performance-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="container">
+    <section class="performance-section">
+        <h2 class="performance-title">Performance Metrics</h2>
+        <p>Graphs and charts illustrating growth statistics and key performance indicators.</p>
+    </section>
+    <section class="performance-section">
+        <h2 class="performance-title">User Engagement</h2>
+        <p>Metrics showing user engagement levels and interactions with Tray API.</p>
+    </section>
+</main>
+{% endblock %}

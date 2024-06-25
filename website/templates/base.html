@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block additional_styles %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -21,6 +22,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/">Home</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/history">History</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         About
@@ -28,6 +32,9 @@
                     <div class="dropdown-menu" aria-labelledby="aboutDropdown">
                         <a class="dropdown-item" href="/about">Our Story</a>
                         <a class="dropdown-item" href="/team">Team</a>
+                        <a class="dropdown-item" href="/faq">FAQ</a>
+                        <a class="dropdown-item" href="/performance">Performance</a>
+                        <a class="dropdown-item" href="/partnerships">Partnerships</a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -39,11 +46,17 @@
                         <a class="dropdown-item" href="/blog">Blog</a>
                     </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/contact">Contact</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="legalDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Legal
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="legalDropdown">
+                        <a class="dropdown-item" href="/legal/privacy-policy">Privacy Policy</a>
+                        <a class="dropdown-item" href="/legal/terms-of-service">Terms of Service</a>
+                    </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/history">History</a>
+                    <a class="nav-link" href="/contact">Contact</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="toggleTheme()">
@@ -53,15 +66,19 @@
             </ul>
         </div>
     </nav>
+
     <main class="container mt-5">
         {% block content %}{% endblock %}
     </main>
+
     <footer class="bg-light py-3 mt-5">
         <p class="text-center">&copy; 2024 Tray API. All rights reserved.</p>
     </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block additional_scripts %}{% endblock %}
 </body>
 </html>

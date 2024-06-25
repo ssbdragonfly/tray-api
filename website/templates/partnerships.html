@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Partnerships - Tray API{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .partner {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .partner img {
+        width: 100px;
+        margin-right: 20px;
+    }
+    .partner-description {
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="container">
+    <section>
+        <div class="partner">
+            <img src="{{ url_for('static', filename='img/partner-logo1.png') }}" alt="Partner 1 Logo">
+            <div class="partner-description">
+                <h3>Partner 1</h3>
+                <p>Description of partnership or sponsorship with Partner 1.</p>
+            </div>
+        </div>
+        <div class="partner">
+            <img src="{{ url_for('static', filename='img/partner-logo2.png') }}" alt="Partner 2 Logo">
+            <div class="partner-description">
+                <h3>Partner 2</h3>
+                <p>Description of partnership or sponsorship with Partner 2.</p>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
