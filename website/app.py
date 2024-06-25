@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import os
 import json
+import requests
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')
@@ -12,6 +14,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
+GEMINI_API_KEY="REDACTED"
 
 @app.route('/')
 def index():
@@ -62,12 +65,10 @@ def save_history(filename, prediction, model_name):
         else:
             with open(history_file, 'r') as f:
                 history = json.load(f)
-
         history.append({'filename': filename, 'prediction': prediction, 'model_name': model_name})
 
         with open(history_file, 'w') as f:
             json.dump(history, f)
-
         print(f"Saved to history.json: {filename}, {prediction}, {model_name}")
     except Exception as e:
         print(f"Error saving history: {e}")
@@ -199,5 +200,45 @@ def terms_of_service():
 @app.route('/partnerships')
 def partnerships():
     return render_template('partnerships.html')
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    user_message = request.json.get('message')
+    headers = {
+        'Authorization': f'Bearer {GEMINI_API_KEY}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'message': user_message
+    }
+    try:
+        response = requests.post('https://api.gemini.com/chatbot', headers=headers, json=data)
+        response_data = response.json()
+        bot_reply = response_data.get('reply', 'Sorry, I didn\'t understand that.')
+    except Exception as e:
+        bot_reply = 'Error communicating with the chatbot API.'
+
+    return jsonify({'reply': bot_reply})
+
+@app.route('/save-chat-log', methods=['POST'])
+def save_chat_log():
+    chat_log = request.json
+    chat_log['timestamp'] = datetime.now().isoformat()
+    try:
+        if os.path.exists('uploads/chat_logs.json'):
+            with open('uploads/chat_logs.json', 'r') as log_file:
+                existing_logs = json.load(log_file)
+        else:
+            existing_logs = []
+        existing_logs.append(chat_log)
+
+        with open('uploads/chat_logs.json', 'w') as log_file:
+            json.dump(existing_logs, log_file, indent=4)
+        
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    
 if __name__ == '__main__':
     app.run(debug=True)

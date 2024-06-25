@@ -1,0 +1,12 @@
+[
+    {
+        "timestamp": "2024-06-25T12:34:56.789",
+        "user_message": "Hello how can I use the API?",
+        "bot_reply": "You can use the API by going to documentation"
+    },
+    {
+        "timestamp": "2024-06-25T12:35:10.123",
+        "user_message": "what is the current performance of the API?",
+        "bot_reply": "You can view the performance measurements of the models in performance."
+    }
+]

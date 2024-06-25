@@ -36,3 +36,71 @@ function toggleTheme() {
 
     console.log(`Theme toggled to: ${targetTheme}`);
 }
+document.addEventListener('DOMContentLoaded', function () {
+    const helpButton = document.getElementById('helpButton');
+    const chatbotPopup = document.getElementById('chatbotPopup');
+    const closeButton = document.getElementById('closeChatbot');
+
+    helpButton.addEventListener('click', function () {
+        chatbotPopup.style.display = 'block';
+        helpButton.style.display = 'none';
+    });
+
+    closeButton.addEventListener('click', function () {
+        chatbotPopup.style.display = 'none';
+        helpButton.style.display = 'block';
+    });
+
+    const inputField = document.getElementById('chatbotInput');
+    inputField.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            document.getElementById('sendMessage').click();
+        }
+    });
+
+    document.getElementById('sendMessage').addEventListener('click', function () {
+        const userMessage = inputField.value;
+        if (userMessage.trim() === '') return;
+
+        const chatLog = document.getElementById('chatLog');
+        chatLog.innerHTML += `<div class="user-message">${userMessage}</div>`;
+
+        fetch('/chatbot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            chatLog.innerHTML += `<div class="bot-reply">${data.reply}</div>`;
+            saveChatLog(userMessage, data.reply);
+        })
+        .catch(error => {
+            chatLog.innerHTML += `<div class="bot-reply">Error communicating with the chatbot API.</div>`;
+        });
+
+        inputField.value = '';
+        chatLog.scrollTop = chatLog.scrollHeight;
+    });
+
+    function saveChatLog(userMessage, botReply) {
+        fetch('/save-chat-log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_message: userMessage, bot_reply: botReply })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving chat log:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error saving chat log:', error);
+        });
+    }
+});
