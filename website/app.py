@@ -180,24 +180,5 @@ def post(post_title):
 def page_not_found(error):
     return render_template('404.html'), 404
 
-@app.route('/faq')
-def faq():
-    return render_template('faq.html')
-
-@app.route('/performance')
-def performance():
-    return render_template('performance.html')
-
-@app.route('/legal/privacy-policy')
-def privacy_policy():
-    return render_template('legal/privacy-policy.html')
-
-@app.route('/legal/terms-of-service')
-def terms_of_service():
-    return render_template('legal/terms-of-service.html')
-
-@app.route('/partnerships')
-def partnerships():
-    return render_template('partnerships.html')
 if __name__ == '__main__':
     app.run(debug=True)
