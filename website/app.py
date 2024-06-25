@@ -175,6 +175,10 @@ def post(post_title):
     else:
         flash('Post not found.')
         return redirect(url_for('blog'))
+    
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

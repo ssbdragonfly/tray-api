@@ -12,7 +12,6 @@
     --card-border: #ddd; 
     --icon-color: #007bff; 
 }
-
 [data-theme="dark"] {
     --background-color: #333;
     --text-color: #f0f0f0;
@@ -34,6 +33,7 @@ body {
     padding: 0;
     background-color: var(--background-color);
     color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease; 
 }
 
 header {
@@ -60,6 +60,35 @@ nav ul li {
 nav ul li a {
     color: var(--nav-link);
     text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #0056b3;
+}
+
+nav ul li.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: var(--nav-bg);
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-menu a {
+    color: var(--nav-link);
+    text-decoration: none;
+    display: block;
+    padding: 12px 16px;
+}
+
+.dropdown-menu a:hover {
+    background-color: #0056b3; 
+    color: #f0f0f0; 
 }
 
 main {
@@ -180,4 +209,22 @@ h1 {
 
 [data-theme="dark"] .text-dark {
     color: white !important;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .card-img-top {
+        height: 180px;
+    }
+
+    .contact-info {
+        font-size: 1rem;
+    }
+
+    footer {
+        padding: 0.5em;
+    }
 }
