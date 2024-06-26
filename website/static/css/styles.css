@@ -335,3 +335,45 @@ footer a:hover {
 .partner-description {
     flex: 1;
 }
+.message {
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 18px;
+    line-height: 1.4;
+    position: relative;
+}
+
+.message::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.user-message::after {
+    right: -8px;
+    border-left-color: #007bff;
+    border-right: 0;
+}
+
+.bot-message {
+    background-color: green;
+    color: black;
+    align-self: flex-start;
+}
+
+.bot-message::after {
+    left: -8px;
+    border-right-color: green;
+    border-left: 0;
+}

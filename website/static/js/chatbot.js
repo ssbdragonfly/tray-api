@@ -1,9 +1,13 @@
 function toggleChatbot() {
     var chatbotContainer = document.getElementById('chatbot-container');
+    var chatbotButton = document.getElementById('chatbot-button');
+    
     if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
         chatbotContainer.style.display = 'flex';
+        chatbotButton.style.display = 'none';
     } else {
         chatbotContainer.style.display = 'none';
+        chatbotButton.style.display = 'flex';
     }
 }
 
@@ -22,7 +26,7 @@ function handleKeyDown(event) {
 function addMessage(sender, message) {
     var messagesContainer = document.getElementById('chatbot-messages');
     var messageElement = document.createElement('div');
-    messageElement.className = sender + '-message';
+    messageElement.className = sender + '-message message';
     messageElement.textContent = message;
     messagesContainer.appendChild(messageElement);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
