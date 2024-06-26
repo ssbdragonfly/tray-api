@@ -3,27 +3,31 @@ import os
 import json
 import requests
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')
-
 UPLOAD_FOLDER = os.path.join('website', 'uploads')
+
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
-
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
-API_KEY = 'REDACTED'
+API_KEY = 'AIzaSyDTb_aFePI-U1ZZ2JYwrrykLqpAbENP3_Y'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}'
+
 TRAY_API_DESCRIPTION = """
 Tray API is an accurate and powerful API for food image classification using various machine learning techniques. It is open-source and can be accessed at github.com/ssbdragonfly/tray-api. For more information, you can contact the developers via email at bishtshaurya314@gmail.com.
 """
+
+MAX_CONTEXT_LENGTH = 5 
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api/<model_name>', methods=['GET', 'POST'])
+@app.route('/api/', methods=['GET', 'POST'])
 def upload_image(model_name):
     try:
         if request.method == 'POST':
@@ -38,13 +42,9 @@ def upload_image(model_name):
                 filepath = os.path.join(UPLOAD_FOLDER, file.filename)
                 file.save(filepath)
                 print(f"Saved file: {filepath}")
-
-                predicted_label = 'Bread'
-
+                predicted_label = 'Bread'  # Replace with actual prediction logic
                 save_history(file.filename, predicted_label, model_name)
-
                 return redirect(url_for('prediction_result', model_name=model_name, prediction=predicted_label, filename=file.filename))
-
         return render_template('upload.html', prediction=None, model_name=model_name)
     except Exception as e:
         print(f"Error during image upload and prediction: {e}")
@@ -68,7 +68,6 @@ def save_history(filename, prediction, model_name):
             with open(history_file, 'r') as f:
                 history = json.load(f)
         history.append({'filename': filename, 'prediction': prediction, 'model_name': model_name})
-
         with open(history_file, 'w') as f:
             json.dump(history, f)
         print(f"Saved to history.json: {filename}, {prediction}, {model_name}")
@@ -106,7 +105,7 @@ def list_routes():
         url = url_for(rule.endpoint, **options)
         line = urllib.parse.unquote(f"{rule.endpoint:50s} {methods:20s} {url}")
         output.append(line)
-    return '<br>'.join(sorted(output))
+    return ''.join(sorted(output))
 
 @app.route('/contact')
 def contact():
@@ -202,60 +201,80 @@ def terms_of_service():
 def partnerships():
     return render_template('partnerships.html')
 
+def process_response(reply_text):
+    reply_text = re.sub('<[^<]+?>', '', reply_text)
+    max_length = 500
+    if len(reply_text) > max_length:
+        reply_text = reply_text[:max_length] + "... (response truncated)"
+    return reply_text
+
+def get_chat_context(user_id):
+    chat_logs_path = os.path.join('website', 'uploads', f'chat_logs_{user_id}.json')
+    try:
+        with open(chat_logs_path, 'r') as file:
+            logs = json.load(file)
+            return logs[-MAX_CONTEXT_LENGTH:]
+    except FileNotFoundError:
+        return []
+
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
     user_message = request.json.get('message')
-
+    user_id = request.json.get('user_id', 'default_user')  
+    context = get_chat_context(user_id)
+    
+    system_message = TRAY_API_DESCRIPTION
+    context_prompt = "\n".join([f"User: {msg['user_message']}\nAssistant: {msg['bot_reply']}" for msg in context])
+    user_prompt = f"Chat history:\n{context_prompt}\n\nUser: {user_message}\nAssistant:"
+    
     headers = {
         'Content-Type': 'application/json'
     }
+    
     data = {
         'contents': [{
-            'parts': [{
-                'text': user_message
-            }]
+            'parts': [
+                {'text': system_message},
+                {'text': user_prompt}
+            ]
         }]
     }
-
     response = requests.post(API_URL, headers=headers, json=data)
     response_data = response.json()
-    print(f"API Response Status: {response.status_code}")
-    print(f"API Response Data: {response_data}")
+    
     if response.status_code == 200:
         replies = response_data.get('candidates', [])
         if replies:
-            reply_text = replies[0].get('content', {}).get('parts', [{}])[0].get('text', 'Sorry, I can\'t understand that.')
+            raw_reply = replies[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+            reply_text = process_response(raw_reply)
         else:
-            reply_text = 'Sorry, I can\'t understand that.'
-        if "tray api" in user_message.lower():
-            reply_text = TRAY_API_DESCRIPTION.strip()
-
+            reply_text = 'I apologize, but I\'m unable to provide a response at the moment.'
     else:
-        reply_text = 'Sorry, I can\'t understand that.'
+        reply_text = 'I\'m sorry, but I encountered an error while processing your request. Please try again later.'
 
     timestamp = datetime.now().isoformat()
-    save_chat_log(user_message, reply_text, timestamp)
-
+    save_chat_log(user_id, user_message, reply_text, timestamp)
+    
     return jsonify({'reply': reply_text, 'api_status': response.status_code, 'api_response': response_data})
 
-def save_chat_log(user_message, bot_reply, timestamp):
+def save_chat_log(user_id, user_message, bot_reply, timestamp):
     chat_log_entry = {
         'timestamp': timestamp,
         'user_message': user_message,
         'bot_reply': bot_reply
     }
-    chat_logs_path = os.path.join('website', 'uploads', 'chat_logs.json')
-
+    
+    chat_logs_path = os.path.join('website', 'uploads', f'chat_logs_{user_id}.json')
     try:
         with open(chat_logs_path, 'r') as file:
             logs = json.load(file)
     except FileNotFoundError:
         logs = []
-
+    
     logs.append(chat_log_entry)
+    logs = logs[-MAX_CONTEXT_LENGTH:]
     with open(chat_logs_path, 'w') as file:
         json.dump(logs, file)
-    print(f"Saved to chat_logs.json: {timestamp}, {user_message}, {bot_reply}")
 
 if __name__ == '__main__':
     if not os.path.exists('uploads'):
