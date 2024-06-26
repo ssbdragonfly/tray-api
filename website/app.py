@@ -16,7 +16,9 @@ class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat'
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
 API_KEY = 'REDACTED'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}'
-
+TRAY_API_DESCRIPTION = """
+Tray API is an accurate and powerful API for food image classification using various machine learning techniques. It is open-source and can be accessed at github.com/ssbdragonfly/tray-api. For more information, you can contact the developers via email at bishtshaurya314@gmail.com.
+"""
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -217,18 +219,20 @@ def chatbot():
 
     response = requests.post(API_URL, headers=headers, json=data)
     response_data = response.json()
-
     print(f"API Response Status: {response.status_code}")
     print(f"API Response Data: {response_data}")
     if response.status_code == 200:
-
         replies = response_data.get('candidates', [])
         if replies:
             reply_text = replies[0].get('content', {}).get('parts', [{}])[0].get('text', 'Sorry, I can\'t understand that.')
         else:
             reply_text = 'Sorry, I can\'t understand that.'
+        if "tray api" in user_message.lower():
+            reply_text = TRAY_API_DESCRIPTION.strip()
+
     else:
         reply_text = 'Sorry, I can\'t understand that.'
+
     timestamp = datetime.now().isoformat()
     save_chat_log(user_message, reply_text, timestamp)
 
