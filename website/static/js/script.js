@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
             saveChatLog(userMessage, data.reply);
         })
         .catch(error => {
+            console.error('error communicating with api:', error);
             chatLog.innerHTML += `<div class="bot-reply">Error communicating with the chatbot API.</div>`;
         });
 

@@ -14,7 +14,8 @@ if not os.path.exists(UPLOAD_FOLDER):
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
-GEMINI_API_KEY="REDACTED"
+API_KEY = 'REDACTED'
+API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}'
 
 @app.route('/')
 def index():
@@ -36,7 +37,6 @@ def upload_image(model_name):
                 file.save(filepath)
                 print(f"Saved file: {filepath}")
 
-                # Hardcoded prediction for demonstration
                 predicted_label = 'Bread'
 
                 save_history(file.filename, predicted_label, model_name)
@@ -154,7 +154,6 @@ def search():
         return render_template('search_results.html', search_results=search_results, search_term=search_term)
     return render_template('search.html')
 
-
 @app.route('/category/<category_name>')
 def category(category_name):
     posts = load_blog_posts()
@@ -176,7 +175,7 @@ def post(post_title):
     else:
         flash('Post not found.')
         return redirect(url_for('blog'))
-    
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
@@ -204,41 +203,57 @@ def partnerships():
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
     user_message = request.json.get('message')
+
     headers = {
-        'Authorization': f'Bearer {GEMINI_API_KEY}',
         'Content-Type': 'application/json'
     }
     data = {
-        'message': user_message
+        'contents': [{
+            'parts': [{
+                'text': user_message
+            }]
+        }]
     }
-    try:
-        response = requests.post('https://api.gemini.com/chatbot', headers=headers, json=data)
-        response_data = response.json()
-        bot_reply = response_data.get('reply', 'Sorry, I didn\'t understand that.')
-    except Exception as e:
-        bot_reply = 'Error communicating with the chatbot API.'
 
-    return jsonify({'reply': bot_reply})
+    response = requests.post(API_URL, headers=headers, json=data)
+    response_data = response.json()
 
-@app.route('/save-chat-log', methods=['POST'])
-def save_chat_log():
-    chat_log = request.json
-    chat_log['timestamp'] = datetime.now().isoformat()
-    try:
-        if os.path.exists('uploads/chat_logs.json'):
-            with open('uploads/chat_logs.json', 'r') as log_file:
-                existing_logs = json.load(log_file)
+    print(f"API Response Status: {response.status_code}")
+    print(f"API Response Data: {response_data}")
+    if response.status_code == 200:
+
+        replies = response_data.get('candidates', [])
+        if replies:
+            reply_text = replies[0].get('content', {}).get('parts', [{}])[0].get('text', 'Sorry, I can\'t understand that.')
         else:
-            existing_logs = []
-        existing_logs.append(chat_log)
+            reply_text = 'Sorry, I can\'t understand that.'
+    else:
+        reply_text = 'Sorry, I can\'t understand that.'
+    timestamp = datetime.now().isoformat()
+    save_chat_log(user_message, reply_text, timestamp)
 
-        with open('uploads/chat_logs.json', 'w') as log_file:
-            json.dump(existing_logs, log_file, indent=4)
-        
-        return jsonify({'status': 'success'})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+    return jsonify({'reply': reply_text, 'api_status': response.status_code, 'api_response': response_data})
 
-    
+def save_chat_log(user_message, bot_reply, timestamp):
+    chat_log_entry = {
+        'timestamp': timestamp,
+        'user_message': user_message,
+        'bot_reply': bot_reply
+    }
+    chat_logs_path = os.path.join('website', 'uploads', 'chat_logs.json')
+
+    try:
+        with open(chat_logs_path, 'r') as file:
+            logs = json.load(file)
+    except FileNotFoundError:
+        logs = []
+
+    logs.append(chat_log_entry)
+    with open(chat_logs_path, 'w') as file:
+        json.dump(logs, file)
+    print(f"Saved to chat_logs.json: {timestamp}, {user_message}, {bot_reply}")
+
 if __name__ == '__main__':
+    if not os.path.exists('uploads'):
+        os.makedirs('uploads')
     app.run(debug=True)
