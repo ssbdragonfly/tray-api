@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 import os
 import json
 import requests
@@ -14,7 +14,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
-API_KEY = 'AIzaSyBGfXs4QELZfSyCl8Qcu1XzAQenmZJ--WA'
+API_KEY = 'AIzaSyDMP1TelzLf2KMiBtxk9KZ94mejaLsgwaY'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}'
 
 TRAY_API_DESCRIPTION = """
@@ -43,13 +43,28 @@ All these features and more can be found on our website. Users can easily naviga
 Remember to keep your responses concise and avoid mentioning any truncation or limitations in your replies.
 """
 
-MAX_CONTEXT_LENGTH = 5 
+MAX_CONTEXT_LENGTH = 5
+MAX_CHAT_HISTORY = 5
+
+@app.before_request
+def before_request():
+    if 'chat_history' not in session:
+        session['chat_history'] = []
+
+def update_chat_history(user_message, bot_reply):
+    chat_history = session.get('chat_history', [])
+    chat_history.append({
+        'timestamp': datetime.now().isoformat(),
+        'user_message': user_message,
+        'bot_reply': bot_reply
+    })
+    session['chat_history'] = chat_history[-MAX_CHAT_HISTORY:]
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api/', methods=['GET', 'POST'])
+@app.route('/api/<model_name>', methods=['GET', 'POST'])
 def upload_image(model_name):
     try:
         if request.method == 'POST':
@@ -115,20 +130,6 @@ def history():
 def prediction_result(model_name, prediction, filename):
     return render_template('result.html', model_name=model_name, prediction=prediction, filename=filename)
 
-@app.route('/routes')
-def list_routes():
-    import urllib
-    output = []
-    for rule in app.url_map.iter_rules():
-        options = {}
-        for arg in rule.arguments:
-            options[arg] = f"[{arg}]"
-        methods = ','.join(rule.methods)
-        url = url_for(rule.endpoint, **options)
-        line = urllib.parse.unquote(f"{rule.endpoint:50s} {methods:20s} {url}")
-        output.append(line)
-    return ''.join(sorted(output))
-
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
@@ -172,8 +173,6 @@ def search():
         search_term = request.form['search_term']
         posts = load_blog_posts()
         search_results = [post for post in posts if search_term.lower() in post['title'].lower() or search_term.lower() in post['content'].lower()]
-        print(f"Search Term: {search_term}")
-        print(f"Search Results: {search_results}")
         return render_template('search_results.html', search_results=search_results, search_term=search_term)
     return render_template('search.html')
 
@@ -225,29 +224,11 @@ def partnerships():
 
 def process_response(reply_text):
     reply_text = re.sub('<[^<]+?>', '', reply_text)
-    max_length = 500
-    if len(reply_text) > max_length:
-        reply_text = reply_text[:max_length] + "... (response truncated)"
-    return reply_text
-
-def get_chat_context(user_id):
-    chat_logs_path = os.path.join('website', 'uploads', f'chat_logs_{user_id}.json')
-    try:
-        with open(chat_logs_path, 'r') as file:
-            logs = json.load(file)
-            return logs[-MAX_CONTEXT_LENGTH:]
-    except FileNotFoundError:
-        return []
+    return reply_text.strip()
 
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
     user_message = request.json.get('message')
-    user_id = request.json.get('user_id', 'default_user')  
-    context = get_chat_context(user_id)
-    
-    system_message = TRAY_API_DESCRIPTION
-    context_prompt = "\n".join([f"User: {msg['user_message']}\nAssistant: {msg['bot_reply']}" for msg in context])
-    user_prompt = f"Chat history:\n{context_prompt}\n\nUser: {user_message}\nAssistant:"
     
     headers = {
         'Content-Type': 'application/json'
@@ -255,49 +236,37 @@ def chatbot():
     
     data = {
         'contents': [{
-            'parts': [
-                {'text': system_message},
-                {'text': user_prompt}
-            ]
+            'parts': [{
+                'text': TRAY_API_DESCRIPTION + user_message
+            }]
         }]
     }
+    
     response = requests.post(API_URL, headers=headers, json=data)
     response_data = response.json()
     
     if response.status_code == 200:
         replies = response_data.get('candidates', [])
         if replies:
-            raw_reply = replies[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-            reply_text = process_response(raw_reply)
+            reply_text = replies[0].get('content', {}).get('parts', [{}])[0].get('text', 'Sorry, I can\'t understand that.')
         else:
-            reply_text = 'I apologize, but I\'m unable to provide a response at the moment.'
+            reply_text = 'Sorry, I can\'t understand that.'
     else:
-        reply_text = 'I\'m sorry, but I encountered an error while processing your request. Please try again later.'
+        reply_text = 'Sorry, I can\'t understand that.'
+    
+    update_chat_history(user_message, reply_text)
+    
+    return jsonify({
+        'reply': reply_text, 
+        'api_status': response.status_code, 
+        'api_response': response_data,
+        'chat_history': session['chat_history']
+    })
 
-    timestamp = datetime.now().isoformat()
-    save_chat_log(user_id, user_message, reply_text, timestamp)
-    
-    return jsonify({'reply': reply_text, 'api_status': response.status_code, 'api_response': response_data})
+@app.route('/get_chat_history')
+def get_chat_history():
+    return jsonify(session.get('chat_history', []))
 
-def save_chat_log(user_id, user_message, bot_reply, timestamp):
-    chat_log_entry = {
-        'timestamp': timestamp,
-        'user_message': user_message,
-        'bot_reply': bot_reply
-    }
-    
-    chat_logs_path = os.path.join('website', 'uploads', f'chat_logs_{user_id}.json')
-    try:
-        with open(chat_logs_path, 'r') as file:
-            logs = json.load(file)
-    except FileNotFoundError:
-        logs = []
-    
-    logs.append(chat_log_entry)
-    logs = logs[-MAX_CONTEXT_LENGTH:]
-    with open(chat_logs_path, 'w') as file:
-        json.dump(logs, file)
-        
 if __name__ == '__main__':
     if not os.path.exists('uploads'):
         os.makedirs('uploads')

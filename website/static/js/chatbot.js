@@ -1,6 +1,7 @@
 let isDragging = false;
 let isResizing = false;
 let startX, startY, startWidth, startHeight;
+let chatHistory = [];
 
 function initChatbot() {
     const chatbotContainer = document.getElementById('chatbot-container');
@@ -11,16 +12,38 @@ function initChatbot() {
     resizeHandle.addEventListener('mousedown', startResizing);
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', stopDraggingAndResizing);
+    loadChatHistory();
+}
+
+function loadChatHistory() {
+    fetch('/get_chat_history')
+        .then(response => response.json())
+        .then(data => {
+            chatHistory = data;
+            displayChatHistory();
+        })
+        .catch(error => console.error('Error loading chat history:', error));
+}
+
+function displayChatHistory() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    messagesContainer.innerHTML = '';
+    chatHistory.forEach(entry => {
+        addMessage('user', entry.user_message);
+        addMessage('bot', entry.bot_reply);
+    });
 }
 
 function startDragging(e) {
     isDragging = true;
+    const chatbotContainer = document.getElementById('chatbot-container');
     startX = e.clientX - chatbotContainer.offsetLeft;
     startY = e.clientY - chatbotContainer.offsetTop;
 }
 
 function startResizing(e) {
     isResizing = true;
+    const chatbotContainer = document.getElementById('chatbot-container');
     startX = e.clientX;
     startY = e.clientY;
     startWidth = parseInt(document.defaultView.getComputedStyle(chatbotContainer).width, 10);
@@ -28,6 +51,7 @@ function startResizing(e) {
 }
 
 function drag(e) {
+    const chatbotContainer = document.getElementById('chatbot-container');
     if (isDragging) {
         const newX = e.clientX - startX;
         const newY = e.clientY - startY;
@@ -53,6 +77,7 @@ function toggleChatbot() {
     if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
         chatbotContainer.style.display = 'flex';
         chatbotButton.style.display = 'none';
+        loadChatHistory();  
     } else {
         chatbotContainer.style.display = 'none';
         chatbotButton.style.display = 'flex';
@@ -93,6 +118,7 @@ function sendToChatbot(message) {
     .then(data => {
         hideLoadingIndicator();
         addMessage('bot', data.reply);
+        chatHistory = data.chat_history; 
     })
     .catch(error => {
         hideLoadingIndicator();
@@ -114,4 +140,5 @@ function hideLoadingIndicator() {
         loadingIndicator.remove();
     }
 }
+
 document.addEventListener('DOMContentLoaded', initChatbot);
