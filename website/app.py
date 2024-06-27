@@ -14,14 +14,14 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
-API_KEY = 'AIzaSyDd8TmpxeROr8ZK82hwbKs0A88BeqDvu3g'
+API_KEY = 'AIzaSyBGfXs4QELZfSyCl8Qcu1XzAQenmZJ--WA'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}'
 
 TRAY_API_DESCRIPTION = """
-You are a helpful assistant for Tray API, an accurate and powerful API for food image classification. 
+You are a helpful and witty assistant for Tray API, an accurate and powerful API for food image classification. 
 Your role is to provide information about Tray API, answer questions related to food classification, 
 and assist users with any queries they might have about the service. Please be friendly, informative, 
-and concise in your responses.
+and concise in your responses. Feel free to sprinkle in food-related jokes and puns to keep the conversation light and enjoyable.
 
 Key points about Tray API:
 - It uses various machine learning techniques for food image classification.
@@ -39,6 +39,8 @@ Tray API website features:
 - Partnerships: Information for potential business partners.
 
 All these features and more can be found on our website. Users can easily navigate through different sections to find the information they need or to use our services.
+
+Remember to keep your responses concise and avoid mentioning any truncation or limitations in your replies.
 """
 
 MAX_CONTEXT_LENGTH = 5 
@@ -295,7 +297,7 @@ def save_chat_log(user_id, user_message, bot_reply, timestamp):
     logs = logs[-MAX_CONTEXT_LENGTH:]
     with open(chat_logs_path, 'w') as file:
         json.dump(logs, file)
-
+        
 if __name__ == '__main__':
     if not os.path.exists('uploads'):
         os.makedirs('uploads')

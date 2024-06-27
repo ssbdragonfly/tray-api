@@ -1,15 +1,61 @@
+let isDragging = false;
+let isResizing = false;
+let startX, startY, startWidth, startHeight;
+
+function initChatbot() {
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotHeader = document.getElementById('chatbot-header');
+    const resizeHandle = document.getElementById('chatbot-resize-handle');
+
+    chatbotHeader.addEventListener('mousedown', startDragging);
+    resizeHandle.addEventListener('mousedown', startResizing);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDraggingAndResizing);
+}
+
+function startDragging(e) {
+    isDragging = true;
+    startX = e.clientX - chatbotContainer.offsetLeft;
+    startY = e.clientY - chatbotContainer.offsetTop;
+}
+
+function startResizing(e) {
+    isResizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startWidth = parseInt(document.defaultView.getComputedStyle(chatbotContainer).width, 10);
+    startHeight = parseInt(document.defaultView.getComputedStyle(chatbotContainer).height, 10);
+}
+
+function drag(e) {
+    if (isDragging) {
+        const newX = e.clientX - startX;
+        const newY = e.clientY - startY;
+        chatbotContainer.style.left = `${newX}px`;
+        chatbotContainer.style.top = `${newY}px`;
+    } else if (isResizing) {
+        const newWidth = startWidth + (e.clientX - startX);
+        const newHeight = startHeight + (e.clientY - startY);
+        chatbotContainer.style.width = `${newWidth}px`;
+        chatbotContainer.style.height = `${newHeight}px`;
+    }
+}
+
+function stopDraggingAndResizing() {
+    isDragging = false;
+    isResizing = false;
+}
+
 function toggleChatbot() {
     var chatbotContainer = document.getElementById('chatbot-container');
     var chatbotButton = document.getElementById('chatbot-button');
     
     if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
         chatbotContainer.style.display = 'flex';
-        chatbotButton.style.opacity = '0';
-        chatbotButton.style.pointerEvents = 'none';
+        chatbotButton.style.display = 'none';
     } else {
         chatbotContainer.style.display = 'none';
-        chatbotButton.style.opacity = '1';
-        chatbotButton.style.pointerEvents = 'auto';
+        chatbotButton.style.display = 'flex';
     }
 }
 
@@ -47,7 +93,6 @@ function sendToChatbot(message) {
     .then(data => {
         hideLoadingIndicator();
         addMessage('bot', data.reply);
-        saveChatLog({ user: message, bot: data.reply });
     })
     .catch(error => {
         hideLoadingIndicator();
@@ -69,20 +114,4 @@ function hideLoadingIndicator() {
         loadingIndicator.remove();
     }
 }
-
-function saveChatLog(chatLog) {
-    fetch('/save-chat-log', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(chatLog)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Chat log saved:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+document.addEventListener('DOMContentLoaded', initChatbot);

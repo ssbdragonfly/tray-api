@@ -82,7 +82,7 @@
 
     <div id="chatbot-container">
         <div id="chatbot-header">
-            Chatbot
+            TrayAPI Assistant
             <span id="chatbot-close" onclick="toggleChatbot()">&times;</span>
         </div>
         <div id="chatbot-messages"></div>
@@ -90,6 +90,7 @@
             <input type="text" id="chatbot-input-field" onkeydown="handleKeyDown(event)" placeholder="Type a message...">
             <button onclick="handleKeyDown({ key: 'Enter' })">Send</button>
         </div>
+        <div id="chatbot-resize-handle"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

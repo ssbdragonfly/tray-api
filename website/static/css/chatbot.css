@@ -33,7 +33,8 @@
     flex-direction: column;
     z-index: 1000;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: none;
+    resize: both;
 }
 
 #chatbot-header {
@@ -44,6 +45,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: move;
 }
 
 #chatbot-close {
@@ -103,6 +105,16 @@
     padding: 8px 15px;
     border-radius: 20px;
     cursor: pointer;
+}
+
+#chatbot-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: se-resize;
+    background: linear-gradient(135deg, transparent 50%, #007bff 50%);
 }
 
 #chatbot-loading {
