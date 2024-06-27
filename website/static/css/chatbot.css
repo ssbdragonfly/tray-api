@@ -105,6 +105,13 @@
     cursor: pointer;
 }
 
+#chatbot-loading {
+    text-align: center;
+    padding: 10px;
+    font-style: italic;
+    color: #666;
+}
+
 @media (max-width: 768px) {
     #chatbot-container {
         width: 90%;

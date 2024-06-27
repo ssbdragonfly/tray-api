@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
     {% block additional_styles %}{% endblock %}
 </head>
 <body>
@@ -74,19 +75,20 @@
     <footer class="bg-light py-3 mt-5">
         <p class="text-center">&copy; 2024 Tray API. All rights reserved.</p>
     </footer>
-    <div id="helpButton" style="position: fixed; bottom: 20px; right: 20px; background-color: #007bff; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+
+    <div id="chatbot-button" onclick="toggleChatbot()">
         <i class="fas fa-question"></i>
     </div>
 
-    <div id="chatbotPopup" style="display: none; position: fixed; bottom: 80px; right: 20px; background-color: white; border: 1px solid #ddd; border-radius: 10px; width: 300px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-        <div style="background-color: #007bff; color: white; padding: 10px; border-top-left-radius: 10px; border-top-right-radius: 10px; display: flex; justify-content: space-between;">
-            <span>Chatbot</span>
-            <span id="closeChatbot" style="cursor: pointer;">&times;</span>
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            Chatbot
+            <span id="chatbot-close" onclick="toggleChatbot()">&times;</span>
         </div>
-        <div id="chatLog" style="height: 200px; overflow-y: auto; padding: 10px;"></div>
-        <div style="display: flex; padding: 10px;">
-            <input id="chatbotInput" type="text" class="form-control" placeholder="Type a message..." style="flex: 1;">
-            <button id="sendMessage" class="btn btn-primary ml-2">Send</button>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input">
+            <input type="text" id="chatbot-input-field" onkeydown="handleKeyDown(event)" placeholder="Type a message...">
+            <button onclick="handleKeyDown({ key: 'Enter' })">Send</button>
         </div>
     </div>
 
@@ -94,6 +96,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
     {% block additional_scripts %}{% endblock %}
 </body>
 </html>

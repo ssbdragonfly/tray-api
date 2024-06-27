@@ -14,7 +14,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 class_labels = ['Bread', 'Dairy Product', 'Dessert', 'Egg', 'Fried food', 'Meat', 'Noodles-Pasta', 'Rice', 'Seafood', 'Soup', 'Vegetable-Fruit']
 BLOG_POSTS_FILE = 'website/uploads/blog_posts.json'
-API_KEY = 'AIzaSyAYfOcU5oA1tfeVCKSP7UKqPHXT1zeZw2g'
+API_KEY = 'AIzaSyDd8TmpxeROr8ZK82hwbKs0A88BeqDvu3g'
 API_URL = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={API_KEY}'
 
 TRAY_API_DESCRIPTION = """
